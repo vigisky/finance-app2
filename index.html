@@ -194,7 +194,7 @@ body.light .bn-err{background:#fee2e2;border-bottom:1px solid #fca5a5;color:#b91
 <body>
 <div id="root"></div>
 <script>
-const SCRIPT_URL="";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxg1Ax0vvzhI50pEyypc-_S0bkA7m48KPTXlF4xlwSZ77F3XQg-yDoG2zvgGV9iQ9PpRw/exec";
 
 const CATS=["Salário","Reembolso","Juros de Investimentos","TAIS","Saldo","Supermercado","Lanches","Guloseimas","Almoço","Padaria","Médico","Plano de Saúde","Farmácia","Saúde","Condomínio","Internet","Telefone","Água/Luz/Gás","Roupas e Calçados","Cosméticos","Acessórios","Cinema/Teatro/Show","Diversão","Bar/Balada","Festas","Educação","Pós-Graduação","Esporte","Cursos","Manutenção do Carro","Gasolina","Estacionamento","Hotel","Viagem","Transporte","Empregada Doméstica","Tarifas bancárias","Saque","Presentes","Transferencias","Outros Gastos"];
 const CC={"Salário":"#22c55e","Reembolso":"#34d399","Juros de Investimentos":"#4ade80","TAIS":"#86efac","Saldo":"#bbf7d0","Supermercado":"#f97316","Lanches":"#fb923c","Guloseimas":"#fdba74","Almoço":"#fbbf24","Padaria":"#fcd34d","Médico":"#3b82f6","Plano de Saúde":"#60a5fa","Saúde":"#93c5fd","Farmácia":"#bfdbfe","Condomínio":"#8b5cf6","Internet":"#a78bfa","Telefone":"#c4b5fd","Roupas e Calçados":"#ec4899","Cosméticos":"#f472b6","Acessórios":"#fb7185","Cinema/Teatro/Show":"#f59e0b","Diversão":"#d97706","Bar/Balada":"#b45309","Festas":"#92400e","Educação":"#0284c7","Pós-Graduação":"#06b6d4","Esporte":"#0891b2","Cursos":"#0e7490","Manutenção do Carro":"#64748b","Gasolina":"#475569","Estacionamento":"#94a3b8","Hotel":"#7c3aed","Viagem":"#6d28d9","Transporte":"#5b21b6","Empregada Doméstica":"#a16207","Tarifas bancárias":"#78716c","Saque":"#d1d5db","Presentes":"#db2777","Transferencias":"#9ca3af","Outros Gastos":"#6b7280"};
@@ -356,20 +356,19 @@ async function loadData(manual=false){
 
 const d = await api({action:"getData"});
       if(d.error){
-              if(manual) S.error=d.error;
-                      if(manual && !S.txs.length) S.error="Sem conexão.";
-                            } else {
-                                    S.txs=d.transactions||[]; S.accs=d.accounts||[];
-                                            const savedAt=new Date().toISOString(); S._cacheTime=savedAt;
-                                                    try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
-                                                          }
-                                                              }
-                                                                  if(manual) S.loading=false;
-                                                                      const sc=document.querySelector(".screen");
-                                                                          const pos=sc?.scrollTop||0;
-                                                                              render();
-                                                                                  requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
-
+        if(manual) S.error=d.error;
+        if(manual && !S.txs.length) S.error="Sem conexão.";
+      } else {
+        S.txs=d.transactions||[]; S.accs=d.accounts||[];
+        const savedAt=new Date().toISOString(); S._cacheTime=savedAt;
+        try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
+      }
+    }
+    if(manual) S.loading=false;
+    const sc=document.querySelector(".screen");
+    const pos=sc?.scrollTop||0;
+    render();
+    requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
 }
 
 function showToast(msg,ok=true){
