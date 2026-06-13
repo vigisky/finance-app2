@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Finance"/>
 <meta name="theme-color" content="#030712"/>
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='white'/%3E%3Crect x='72' y='280' width='88' height='160' rx='16' fill='%23e8453c'/%3E%3Crect x='192' y='200' width='88' height='240' rx='16' fill='%23f5a623'/%3E%3Crect x='312' y='108' width='88' height='332' rx='16' fill='%2334a853'/%3E%3Cpath d='M88 390 C160 310 240 240 430 150' stroke='%234285f4' stroke-width='32' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M390 118 L450 162 L418 194 L358 150 Z' fill='%234285f4'/%3E%3C/svg%3E"/>
+
 <title>Finance Report</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
@@ -144,8 +145,8 @@ body.light .xbtn{background:#dde3ea;color:#334155}
 /* txr — inherits color from parent, so works in both themes */
 .txr{width:100%;border-radius:15px;padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;margin-bottom:8px;transition:background .1s;-webkit-user-select:none;border:1px solid transparent}
 .tx-ic{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:flex-end;justify-content:center}
-.modal{width:100%;max-width:500px;border-radius:26px 26px 0 0;max-height:88vh;overflow-y:auto;overflow-x:hidden}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:flex-end;justify-content:center;z-index:500 !important}
+.modal{width:100%;max-width:500px;border-radius:26px 26px 0 0;max-height:88vh;overflow-y:auto;overflow-x:hidden;z-index:600 !important}
 .modal::-webkit-scrollbar{display:none}
 .mh{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 13px;border-bottom:1px solid transparent;position:sticky;top:0;z-index:50}
 .mb{padding:14px 18px 32px}
@@ -179,11 +180,21 @@ body.light .bn-err{background:#fee2e2;border-bottom:1px solid #fca5a5;color:#b91
 .sort-btn{padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;align-items:center;gap:4px;border:1.5px solid transparent}
 .today-bal{margin:0 14px 12px;border-radius:16px;padding:13px 15px}
 .theme-btn{width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid transparent}</style>
+
+<script>
+  if('serviceWorker' in navigator){
+    const swCode="self.addEventListener('fetch',e=>{});";
+      const blob=new Blob([swCode],{type:'application/javascript'});
+        navigator.serviceWorker.register(URL.createObjectURL(blob));
+        }
+        </script>
+
+
 </head>
 <body>
 <div id="root"></div>
 <script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzbX0ceje8fAEkgxmlhVciYm5OSObXUdnsuDbMsgwnxgKL5MQcJvqCgjeRyHyIWo3lxOg/exec";
+const SCRIPT_URL="";
 
 const CATS=["Salário","Reembolso","Juros de Investimentos","TAIS","Saldo","Supermercado","Lanches","Guloseimas","Almoço","Padaria","Médico","Plano de Saúde","Farmácia","Saúde","Condomínio","Internet","Telefone","Água/Luz/Gás","Roupas e Calçados","Cosméticos","Acessórios","Cinema/Teatro/Show","Diversão","Bar/Balada","Festas","Educação","Pós-Graduação","Esporte","Cursos","Manutenção do Carro","Gasolina","Estacionamento","Hotel","Viagem","Transporte","Empregada Doméstica","Tarifas bancárias","Saque","Presentes","Transferencias","Outros Gastos"];
 const CC={"Salário":"#22c55e","Reembolso":"#34d399","Juros de Investimentos":"#4ade80","TAIS":"#86efac","Saldo":"#bbf7d0","Supermercado":"#f97316","Lanches":"#fb923c","Guloseimas":"#fdba74","Almoço":"#fbbf24","Padaria":"#fcd34d","Médico":"#3b82f6","Plano de Saúde":"#60a5fa","Saúde":"#93c5fd","Farmácia":"#bfdbfe","Condomínio":"#8b5cf6","Internet":"#a78bfa","Telefone":"#c4b5fd","Roupas e Calçados":"#ec4899","Cosméticos":"#f472b6","Acessórios":"#fb7185","Cinema/Teatro/Show":"#f59e0b","Diversão":"#d97706","Bar/Balada":"#b45309","Festas":"#92400e","Educação":"#0284c7","Pós-Graduação":"#06b6d4","Esporte":"#0891b2","Cursos":"#0e7490","Manutenção do Carro":"#64748b","Gasolina":"#475569","Estacionamento":"#94a3b8","Hotel":"#7c3aed","Viagem":"#6d28d9","Transporte":"#5b21b6","Empregada Doméstica":"#a16207","Tarifas bancárias":"#78716c","Saque":"#d1d5db","Presentes":"#db2777","Transferencias":"#9ca3af","Outros Gastos":"#6b7280"};
@@ -276,18 +287,34 @@ let toastTimer=null;
 //  return JSON.parse(await r.text());
 //  }catch(e){return{error:e.message};}
 //}
-function api(payload) {
-  return new Promise((resolve, reject) => {
-    google.script.run
-      .withSuccessHandler(function(response) {
-        resolve(response);
-      })
-      .withFailureHandler(function(err) {
-        resolve({ error: err.message || err });
-      })
-      .processarEnvioInterno(payload);
-  });
-}
+//function api(payload) {
+ // return new Promise((resolve, reject) => {
+    //google.script.run
+      //.withSuccessHandler(function(response) {
+        //resolve(response);
+    //  })
+     // .withFailureHandler(function(err) {
+    //    resolve({ error: err.message || err });
+  //      })
+    //  .processarEnvioInterno(payload);
+  //});
+//}
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg1Ax0vvzhI50pEyypc-_S0bkA7m48KPTXlF4xlwSZ77F3XQg-yDoG2zvgGV9iQ9PpRw/exec";
+
+async function api(payload) {
+  try {
+      const r = await fetch(SCRIPT_URL, {
+            method: "POST",
+                  headers: {"Content-Type": "text/plain;charset=utf-8"},
+                        body: JSON.stringify(payload),
+                              redirect: "follow"
+                                  });
+                                      return JSON.parse(await r.text());
+                                        } catch(e) {
+                                            return { error: e.message };
+                                              }
+                                              }
 
 async function loadData(manual=false){
   if(manual){S.loading=true;S.error=null;render();}
@@ -300,31 +327,49 @@ async function loadData(manual=false){
     }
     
     // CHAMADA INTERNA DIRETA PARA O SCRIPT .GS
-    google.script.run
-      .withSuccessHandler(function(d) {
-        if(d.error){if(manual)S.error=d.error;}
-        else{
-          S.txs=d.transactions||[];S.accs=d.accounts||[];
-          const savedAt=new Date().toISOString();S._cacheTime=savedAt;
-          try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
-        }
-        S.loading=false;
-        render();
-      })
-      .withFailureHandler(function(err) {
-        if(manual) S.error = "Erro na conexão interna.";
-        S.loading=false;
-        render();
-      })
-      .getData(); // Executa a função getData() do seu Script_Corrigido.gs
+  //  google.script.run
+    //  .withSuccessHandler(function(d) {
+//      if(d.error){if(manual)S.error=d.error;}
+   //     else{
+   //       S.txs=d.transactions||[];S.accs=d.accounts||[];
+    //      const savedAt=new Date().toISOString();S._cacheTime=savedAt;
+//        try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
+  //      }
+   //     S.loading=false;
+  //      render();
+//   })
+   //   .withFailureHandler(function(err) {
+  //      if(manual) S.error = "Erro na conexão interna.";
+   //     S.loading=false;
+    //    render();
+    //    })
+    //  .getData(); // Executa a função getData() do seu Script_Corrigido.gs
       
-    return; // Interrompe o fluxo antigo do fetch externo
-  }catch(e){if(manual&&!S.txs.length)S.error="Sem conexão.";}
-  if(manual)S.loading=false;
-  const sc=document.querySelector(".screen");
-  const pos=sc?.scrollTop||0;
-  render();
-  requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
+//  return; // Interrompe o fluxo antigo do fetch externo
+  //}catch(e){if(manual&&!S.txs.length)S.error="Sem conexão.";}
+  //if(manual)S.loading=false;
+  //const sc=document.querySelector(".screen");
+  //const pos=sc?.scrollTop||0;
+  //render();
+  // requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
+//}
+
+const d = await api({action:"getData"});
+      if(d.error){
+              if(manual) S.error=d.error;
+                      if(manual && !S.txs.length) S.error="Sem conexão.";
+                            } else {
+                                    S.txs=d.transactions||[]; S.accs=d.accounts||[];
+                                            const savedAt=new Date().toISOString(); S._cacheTime=savedAt;
+                                                    try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
+                                                          }
+                                                              }
+                                                                  if(manual) S.loading=false;
+                                                                      const sc=document.querySelector(".screen");
+                                                                          const pos=sc?.scrollTop||0;
+                                                                              render();
+                                                                                  requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
+
 }
 
 function showToast(msg,ok=true){
@@ -855,7 +900,7 @@ function pgRelatorios(c){
       <p style="color:${S.darkMode?"#475569":"#64748b"};font-size:11px;margin:0 0 10px">Toque para ver os lançamentos</p>
       ${c.catTotals.length===0?`<p style="color:${S.darkMode?"#475569":"#64748b"};font-size:13px">Sem despesas</p>`:""}
       ${c.catTotals.map(ct=>`
-      <button onclick="S._scrollPos=document.querySelector('.screen')?.scrollTop||0;S._catClick=ct.label;S.relModal={cat:ct.label,catTipo:'Despesa',tipo:'cat'};render()" style="width:100%;background:transparent;border:none;cursor:pointer;text-align:left;padding:0;margin-bottom:14px;display:block">
+      <button onclick="S._scrollPos=document.querySelector('.screen')?.scrollTop||0;openRelCatModal('${encodeLabel(ct.label)}','Despesa')" style="width:100%;background:transparent;border:none;cursor:pointer;text-align:left;padding:0;margin-bottom:14px;display:block">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
           <span style="font-size:14px;font-weight:600;color:${S.darkMode?"#e2e8f0":"#1e293b"}">${getCatIcon(ct.label)} ${ct.label}</span>
           <span style="font-size:14px;font-weight:700;color:${CC[ct.label]||'#f87171'}">${fmt(ct.value)} <span style="color:${S.darkMode?"#475569":"#94a3b8"};font-size:12px">›</span></span>
@@ -875,7 +920,7 @@ function pgRelatorios(c){
       ${c.recTotals.length===0?`<p style="color:${S.darkMode?"#475569":"#64748b"};font-size:13px">Sem receitas</p>`:""}
       <p style="color:${S.darkMode?"#475569":"#64748b"};font-size:11px;margin:0 0 10px">Toque para ver os lançamentos</p>
       ${c.recTotals.map(ct=>`
-      <button onclick="S._scrollPos=document.querySelector('.screen')?.scrollTop||0;S._catClick=ct.label;S.relModal={cat:ct.label,catTipo:'Receita',tipo:'cat'};render()" style="width:100%;background:transparent;border:none;cursor:pointer;text-align:left;padding:0;margin-bottom:14px;display:block">
+      <button onclick="S._scrollPos=document.querySelector('.screen')?.scrollTop||0;openRelCatModal('${encodeLabel(ct.label)}','Receita')" style="width:100%;background:transparent;border:none;cursor:pointer;text-align:left;padding:0;margin-bottom:14px;display:block">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
           <span style="font-size:14px;font-weight:600;color:${S.darkMode?"#e2e8f0":"#1e293b"}">${getCatIcon(ct.label)} ${ct.label}</span>
           <span style="font-size:14px;font-weight:700;color:#22c55e">${fmt(ct.value)} <span style="color:${S.darkMode?"#475569":"#94a3b8"};font-size:12px">›</span></span>
@@ -1037,7 +1082,7 @@ function openRelModal(mes,ano){
   render();
 }
 function openRelCatModal(cat,tipo){
-  S.relModal={cat:S._catClick||cat||"",catTipo:tipo||"Despesa",tipo:"cat"};
+  S.relModal={cat:cat||"",catTipo:tipo||"Despesa",tipo:"cat"};
   render();
 }
 function closeRelModal(){
