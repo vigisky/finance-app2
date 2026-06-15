@@ -268,7 +268,7 @@ let S={
 let toastTimer=null;
 
 // ── API ───────────────────────────────────────────────────────
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxg1Ax0vvzhI50pEyypc-_S0bkA7m48KPTXlF4xlwSZ77F3XQg-yDoG2zvgGV9iQ9PpRw/exec";
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbx3cfQ4LTlVhh4p2QqMDqMkMCh_XCc9JzYHCJX9Xf2mxgNnjjdJB0gKvE7seOtiO0haTw/exec";
 async function api(payload){
   try{
     const r=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),redirect:"follow"});
