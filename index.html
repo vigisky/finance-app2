@@ -285,6 +285,25 @@ async function loadData(manual=false){
         if(cached){const{txs,accs,savedAt}=JSON.parse(cached);S.txs=txs||[];S.accs=accs||[];S._cacheTime=savedAt;render();}
       }catch(e){}
     }
+    const d=await api({action:"getData"});
+    if(d.error){
+      if(manual)S.error=d.error;
+      if(manual&&!S.txs.length)S.error="Sem conexão.";
+    }else{
+      S.txs=d.transactions||[];S.accs=d.accounts||[];
+      const savedAt=new Date().toISOString();S._cacheTime=savedAt;
+      try{localStorage.setItem("fr_cache",JSON.stringify({txs:S.txs,accs:S.accs,savedAt}));}catch(e){}
+    }
+  }catch(e){
+    if(manual&&!S.txs.length)S.error="Sem conexão.";
+  }
+  if(manual)S.loading=false;
+  const sc=document.querySelector(".screen");
+  const pos=sc?.scrollTop||0;
+  render();
+  requestAnimationFrame(()=>{if(sc)sc.scrollTop=pos;});
+}
+
 
 function showToast(msg,ok=true){
   const isOk=(ok===true||ok==="ok");
