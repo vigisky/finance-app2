@@ -269,11 +269,19 @@ let toastTimer=null;
 
 // ── API ───────────────────────────────────────────────────────
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbz71rXiY0FqdB-OfiHNmS_3O9PAjOR4SfzMe9L7OgqHxyKED3aj3zSf4b6uhEBT8inB/exec";
-async function api(payload){
-  try{
-    const r=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload),redirect:"follow"});
+
+async function api(payload) {
+  try {
+    // Transformamos o payload em parâmetros de URL para o GET funcionar
+    const queryString = payload ? '?action=' + payload.action : '';
+    const r = await fetch(SCRIPT_URL + queryString, {
+      method: "GET",
+      redirect: "follow"
+    });
     return JSON.parse(await r.text());
-  }catch(e){return{error:e.message};}
+  } catch(e) {
+    return { error: e.message };
+  }
 }
 
 async function loadData(manual=false){
